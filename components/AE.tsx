@@ -24,7 +24,7 @@ export function AE({
   } as const;
 
   if (position > 8) {
-    return;
+    return <></>;
   }
 
   return (
