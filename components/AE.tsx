@@ -1,5 +1,5 @@
 import { AutonomousEntity, AutonomousEntities } from "../data";
-import { motion } from "framer-motion";
+import { motion, useMotionValue, useTransform } from "framer-motion";
 
 type AEProps = {
   onGoToAE: (id: string) => void;
@@ -18,9 +18,19 @@ export function AE({
   const position = currentStackLength - 1 - level;
   const opacity = 1 - position / 10;
   const offset = position * (8 + position);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useTransform(y, [-100, 100], [60, -60]);
+  const rotateY = useTransform(x, [-100, 100], [-60, 60]);
+
   const dynamicStyles = {
     zIndex: level,
-    position: position === 0 ? "relative" : "absolute"
+    position: position === 0 ? "relative" : "absolute",
+    x: x,
+    y: y,
+    rotateX: rotateX,
+    rotateY: rotateY,
+    cursor: "grab"
   } as const;
 
   if (position > 8) {
@@ -30,9 +40,17 @@ export function AE({
   return (
     <motion.div
       drag
-      dragElastic={0.2}
-      whileHover={{ scale: 1.05, opacity: 1 }}
-      initial={{ opacity: 0.5, top: 300 }}
+      dragConstraints={{ top: 0, right: 0, bottom: 0, left: 0 }}
+      dragElastic={0.6}
+      whileTap={{ cursor: "grabbing" }}
+      // whileHover={{
+      //   scale: 1.05,
+      //   opacity: 1
+      // }}
+      initial={{
+        opacity: 0.5,
+        top: 300
+      }}
       animate={{
         opacity,
         left: offset,
